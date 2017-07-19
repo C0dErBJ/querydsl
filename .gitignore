@@ -84,3 +84,4 @@ hs_err_pid*
 
 /.idea/
 /querydsl-generator/build/
+/querydsl.iml
