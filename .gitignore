@@ -83,7 +83,7 @@ fabric.properties
 hs_err_pid*
 
 /.idea/
-/querydsl-generator/build/
 /querydsl.iml
 /querydsl-generator/out/
 /repo/
+/querydsl-generator/build/
