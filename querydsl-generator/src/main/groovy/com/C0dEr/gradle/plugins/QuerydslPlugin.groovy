@@ -1,6 +1,5 @@
 package com.C0dEr.gradle.plugins
 
-import com.C0dEr.gradle.plugins.tasks.CleanQuerydslSourcesDir
 import com.C0dEr.gradle.plugins.tasks.InitQuerydslSourcesDir
 import com.C0dEr.gradle.plugins.tasks.QuerydslCompile
 import org.gradle.api.Plugin
@@ -55,20 +54,25 @@ class QuerydslPlugin implements Plugin<Project> {
         project.extensions.create(QuerydslPluginExtension.NAME, QuerydslPluginExtension)
 
         // add new tasks for creating/cleaning the auto-value sources dir
-        project.task(type: CleanQuerydslSourcesDir, "cleanQuerydslSourcesDir")
+        //   project.task(type: CleanQuerydslSourcesDir, "cleanQuerydslSourcesDir")
         project.task(type: InitQuerydslSourcesDir, "initQuerydslSourcesDir")
 
         // make 'clean' depend clean ing querydsl sources
-        project.tasks.clean.dependsOn project.tasks.cleanQuerydslSourcesDir
+        //  project.tasks.clean.dependsOn project.tasks.cleanQuerydslSourcesDir
 
         project.task(type: QuerydslCompile, "compileQuerydsl")
         project.tasks.compileQuerydsl.dependsOn project.tasks.initQuerydslSourcesDir
+        if (!project.tasks.findByName("compileKotlin") != null) {
+            project.tasks.compileKotlin.dependsOn project.tasks.compileQuerydsl
+        }
         project.tasks.compileJava.dependsOn project.tasks.compileQuerydsl
-
         project.afterEvaluate {
             File querydslSourcesDir = querydslSourcesDir(project)
             addLibrary(project)
             addSourceSet(project, querydslSourcesDir)
+            if (!project.tasks.findByName("compileKotlin") != null) {
+                registerSourceAtCompileKotlin(project, querydslSourcesDir)
+            }
             registerSourceAtCompileJava(project, querydslSourcesDir)
             applyCompilerOptions(project)
         }
@@ -87,6 +91,12 @@ class QuerydslPlugin implements Plugin<Project> {
         }
     }
 
+    private void registerSourceAtCompileKotlin(Project project, File querydslSourcesDir) {
+        project.compileKotlin {
+            source querydslSourcesDir
+        }
+    }
+
     private void addLibrary(Project project) {
         def library = project.extensions.querydsl.library
         LOG.info("Querydsl library: {}", library)
@@ -97,7 +107,7 @@ class QuerydslPlugin implements Plugin<Project> {
 
     private void addSourceSet(Project project, File sourcesDir) {
         LOG.info("Create source set 'querydsl'.")
-        project.plugins.findPlugin("idea").ideaModel.module.sourceDirs+= sourcesDir
+        project.plugins.findPlugin("idea").ideaModel.module.sourceDirs += sourcesDir
 //    project.sourceSets {
 //      querydsl {
 //        java.srcDirs = [sourcesDir]
