@@ -1,9 +1,6 @@
 ### Querydsl plugin
 This is a fork from [ewerk](https://github.com/ewerk/gradle-plugins).
-I have deleted the
-```
-addSourceSet(project, querydslSourcesDir)
-```
+
 
 #### Description
 
