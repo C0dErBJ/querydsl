@@ -65,7 +65,7 @@ class QuerydslPlugin implements Plugin<Project> {
         project.tasks.initQuerydslSourcesDir.dependsOn project.tasks.cleanQuerydslSourcesDir
         project.tasks.compileQuerydsl.dependsOn project.tasks.initQuerydslSourcesDir
 
-        if (!project.tasks.findByName("compileKotlin") != null) {
+        if (project.tasks.findByName("compileKotlin") != null) {
             project.tasks.compileKotlin.dependsOn project.tasks.compileQuerydsl
         }
         project.tasks.compileJava.dependsOn project.tasks.compileQuerydsl
@@ -110,7 +110,10 @@ class QuerydslPlugin implements Plugin<Project> {
 
     private void addSourceSet(Project project, File sourcesDir) {
         LOG.info("Create source set 'querydsl'.")
-        project.plugins.findPlugin("idea").ideaModel.module.sourceDirs += sourcesDir
+        if (project.plugins.hasPlugin(IdeaPlugin.class)) {
+            project.idea.module.sourceDirs += sourcesDir
+        }
+
 
     }
 
